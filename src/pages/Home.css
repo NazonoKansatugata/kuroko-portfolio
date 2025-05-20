@@ -1,0 +1,256 @@
+.niconico-container {
+  background: #222;
+  color: #fff;
+  min-height: 100vh;
+  font-family: 'Segoe UI', 'Meiryo', sans-serif;
+}
+.niconico-header {
+  background: #111;
+  padding: 16px;
+  text-align: center;
+  border-bottom: 2px solid #444;
+}
+.niconico-main {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 16px;
+}
+.niconico-video-area {
+  position: relative;
+  width: 640px;
+  height: 360px;
+  margin: 0 auto 32px auto;
+  background: #000;
+  border: 2px solid #888;
+  overflow: hidden;
+}
+.niconico-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+}
+.niconico-profile, .niconico-works {
+  background: #333;
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 8px;
+}
+.niconico-works ul {
+  padding-left: 20px;
+}
+
+/* ニコニコ動画風動画リスト */
+.niconico-video-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+.niconico-video-card {
+  background: #222;
+  border: 1.5px solid #444;
+  border-radius: 8px;
+  width: 220px;
+  box-shadow: 0 2px 8px #0008;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s;
+}
+.niconico-video-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 4px 16px #000a;
+}
+.niconico-video-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 124px;
+  background: #111;
+}
+.niconico-video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.92;
+}
+.niconico-play-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s;
+  z-index: 2;
+}
+.niconico-play-btn:hover {
+  background: #fff;
+  color: #111;
+}
+.niconico-video-info {
+  padding: 10px 12px 12px 12px;
+}
+.niconico-video-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.niconico-video-desc {
+  font-size: 0.95rem;
+  color: #ccc;
+  min-height: 32px;
+  margin-bottom: 2px;
+}
+.niconico-video-main-info {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(34,34,34,0.85);
+  color: #fff;
+  padding: 12px 20px 10px 20px;
+  box-sizing: border-box;
+}
+.niconico-video-main-info .niconico-video-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.niconico-video-main-info .niconico-video-desc {
+  font-size: 1rem;
+  color: #ccc;
+}
+.niconico-nav {
+  position: absolute;
+  top: 18px;
+  right: 32px;
+  z-index: 10;
+}
+.niconico-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.niconico-nav li {
+  margin-bottom: 8px;
+}
+.niconico-nav a {
+  color: #fff;
+  background: #444;
+  padding: 6px 16px;
+  border-radius: 16px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.niconico-nav a:hover {
+  background: #fff;
+  color: #222;
+}
+
+.niconico-work-detail {
+  background: #333;
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 8px;
+}
+.niconico-work-detail h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: #fff;
+}
+.niconico-work-detail p {
+  color: #ccc;
+  margin-bottom: 0;
+}
+
+.profile-card {
+  display: flex;
+  flex-wrap: wrap;
+  background: #333;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0006;
+  padding: 32px 24px;
+  margin: 32px auto;
+  max-width: 700px;
+  gap: 32px;
+}
+.profile-avatar-area {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  object-fit: cover;
+  margin-bottom: 12px;
+  background: #222;
+}
+.profile-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.profile-job {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.profile-links {
+  display: flex;
+  gap: 12px;
+}
+.profile-links img {
+  width: 28px;
+  height: 28px;
+  filter: grayscale(1) brightness(1.2);
+  transition: filter 0.2s;
+}
+.profile-links img:hover {
+  filter: none;
+}
+.profile-detail {
+  flex: 1 1 300px;
+}
+.profile-detail h2 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-top: 0;
+  margin-bottom: 8px;
+  border-left: 4px solid #888;
+  padding-left: 8px;
+}
+.profile-detail p {
+  color: #ccc;
+  margin-bottom: 18px;
+  line-height: 1.7;
+}
+.profile-skills, .profile-history {
+  color: #ccc;
+  margin-bottom: 18px;
+  padding-left: 20px;
+}
+.profile-skills li, .profile-history li {
+  margin-bottom: 4px;
+}
