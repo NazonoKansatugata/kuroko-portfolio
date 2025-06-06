@@ -3,10 +3,41 @@ import { Link } from 'react-router-dom';
 import Danmaku from '../components/Danmaku';
 import works from '../works';
 import './Home.css';
+import { db } from '../firebase';
+import { collection, doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 function Home() {
   const initialWork = works.find(w => w.title === 'Brakiocup2025') || works[0];
   const [selected, setSelected] = useState(initialWork);
+
+  // コメント投稿フォーム用の状態
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+
+  // コメント投稿処理
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    setSending(true);
+    const commentText = input.trim();
+    try {
+      const docRef = doc(collection(db, "danmakuComments"), selected.title);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        await updateDoc(docRef, {
+          comments: arrayUnion(commentText)
+        });
+      } else {
+        await setDoc(docRef, {
+          comments: [commentText]
+        });
+      }
+      setInput("");
+    } catch (e) {
+      // エラー処理（必要に応じて）
+    }
+    setSending(false);
+  };
 
   return (
     <div className="niconico-container">
@@ -29,6 +60,23 @@ function Home() {
           />
           <Danmaku title={selected.title} />
         </div>
+        {/* コメント投稿フォームをここに追加 */}
+        <form
+          className="danmaku-form"
+          onSubmit={handleSubmit}
+          style={{ margin: '12px 0', display: 'flex', gap: 4, maxWidth: 480 }}
+        >
+          <input
+            type="text"
+            value={input}
+            maxLength={40}
+            onChange={e => setInput(e.target.value)}
+            placeholder="コメントを入力..."
+            disabled={sending}
+            style={{ flex: 1 }}
+          />
+          <button type="submit" disabled={sending || !input.trim()}>投稿</button>
+        </form>
         <section className="niconico-work-detail">
           <h2>{selected.title}</h2>
           <p>{selected.description}</p>
