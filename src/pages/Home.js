@@ -4,7 +4,9 @@ import Danmaku from '../components/Danmaku';
 import works from '../works';
 import './Home.css';
 import { db } from '../firebase';
-import { collection, doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  collection, doc, addDoc, serverTimestamp
+} from "firebase/firestore";
 
 function Home() {
   const initialWork = works.find(w => w.title === 'Brakiocup2025') || works[0];
@@ -21,17 +23,11 @@ function Home() {
     setSending(true);
     const commentText = input.trim();
     try {
-      const docRef = doc(collection(db, "danmakuComments"), selected.title);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        await updateDoc(docRef, {
-          comments: arrayUnion(commentText)
-        });
-      } else {
-        await setDoc(docRef, {
-          comments: [commentText]
-        });
-      }
+      const commentsRef = collection(db, "danmakuComments", selected.title, "comments");
+      await addDoc(commentsRef, {
+        text: commentText,
+        createdAt: serverTimestamp()
+      });
       setInput("");
     } catch (e) {
       // エラー処理（必要に応じて）
