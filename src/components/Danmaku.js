@@ -1,68 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Danmaku.css';
-
-const danmakuComments = {
-  'Brakiocup2025': [
-    "README爆発！",
-    "惑星が進化してる！",
-    "五角形グラフすごい！",
-    "Progate賞おめでとう！",
-    "評価が見やすい！",
-    "UIがかっこいい！",
-    "爆発演出最高！",
-    "グラフの動きが滑らか！",
-    "Gemini API使ってる！",
-    "three.jsすごい！"
-  ],
-  'きたキタ九州': [
-    "観光情報たっぷり！",
-    "グルメ情報最高！",
-    "最優秀賞おめでとう！",
-    "Flutterで開発！",
-    "Google Maps連携！",
-    "UIが使いやすい！",
-    "認証機能便利！",
-    "学生が選ぶ最優秀賞！",
-    "地図が見やすい！",
-    "DB管理しっかり！"
-  ],
-  'ぷろふぃーるはぶ': [
-    "オリキャラかわいい！",
-    "トークが楽しい！",
-    "LINE風UI！",
-    "Gemini API活用！",
-    "キャラ共有できる！",
-    "DB連携すごい！",
-    "キャラ制作簡単！",
-    "会話が自然！",
-    "Flutterで実装！",
-    "UIにこだわり！"
-  ],
-  '作品D': [
-    "Unity落ちものゲーム！",
-    "ブロック積み上げ！",
-    "物理挙動リアル！",
-    "スコア更新！",
-    "レベルアップ！",
-    "C#で開発！",
-    "連鎖が気持ちいい！",
-    "操作性抜群！",
-    "ゲーム性高い！",
-    "Unity経験豊富！"
-  ],
-  '作品E': [
-    "魔法少女ゲーム！",
-    "魔法エフェクトきれい！",
-    "敵を倒せ！",
-    "ステージクリア！",
-    "アニメーションすごい！",
-    "Pygameで制作！",
-    "ランキング機能搭載！",
-    "魔法が多彩！",
-    "キャラがかわいい！",
-    "Pythonでゲーム！"
-  ]
-};
+import { db } from '../firebase';
+import { collection, doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -70,13 +9,33 @@ function getRandomInt(max) {
 
 function Danmaku({ title }) {
   const containerRef = useRef();
+  const [comments, setComments] = useState(["すごい！", "応援してます！"]);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    // Firestoreから弾幕コメントを取得
+    async function fetchComments() {
+      try {
+        const docRef = doc(collection(db, "danmakuComments"), title);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setComments(docSnap.data().comments || ["すごい！", "応援してます！"]);
+        } else {
+          setComments(["すごい！", "応援してます！"]);
+        }
+      } catch (e) {
+        setComments(["すごい！", "応援してます！"]);
+      }
+    }
+    fetchComments();
+  }, [title]);
 
   useEffect(() => {
     const container = containerRef.current;
     let intervalId;
     if (container) {
       intervalId = setInterval(() => {
-        const comments = danmakuComments[title] || ["すごい！", "応援してます！"];
         const comment = document.createElement('div');
         comment.className = 'danmaku-comment';
         comment.textContent = comments[getRandomInt(comments.length)];
@@ -93,9 +52,51 @@ function Danmaku({ title }) {
       }, 1200);
     }
     return () => clearInterval(intervalId);
-  }, [title]);
+  }, [comments]);
 
-  return <div className="danmaku-container" ref={containerRef}></div>;
+  // コメント投稿処理
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    setSending(true);
+    const commentText = input.trim();
+    try {
+      const docRef = doc(collection(db, "danmakuComments"), title);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        await updateDoc(docRef, {
+          comments: arrayUnion(commentText)
+        });
+      } else {
+        await setDoc(docRef, {
+          comments: [commentText]
+        });
+      }
+      setComments(prev => [...prev, commentText]);
+      setInput("");
+    } catch (e) {
+      // エラー処理（必要に応じて）
+    }
+    setSending(false);
+  };
+
+  return (
+    <div>
+      <div className="danmaku-container" ref={containerRef}></div>
+      <form className="danmaku-form" onSubmit={handleSubmit} style={{marginTop: 8, display: 'flex', gap: 4}}>
+        <input
+          type="text"
+          value={input}
+          maxLength={40}
+          onChange={e => setInput(e.target.value)}
+          placeholder="コメントを入力..."
+          disabled={sending}
+          style={{flex: 1}}
+        />
+        <button type="submit" disabled={sending || !input.trim()}>投稿</button>
+      </form>
+    </div>
+  );
 }
 
 export default Danmaku;
