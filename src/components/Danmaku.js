@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Danmaku.css';
 import { db } from '../firebase';
-import { collection, doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  collection, doc, addDoc, query, orderBy, onSnapshot, serverTimestamp
+} from "firebase/firestore";
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -14,21 +16,14 @@ function Danmaku({ title }) {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    // Firestoreから弾幕コメントを取得
-    async function fetchComments() {
-      try {
-        const docRef = doc(collection(db, "danmakuComments"), title);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setComments(docSnap.data().comments || ["すごい！", "応援してます！"]);
-        } else {
-          setComments(["すごい！", "応援してます！"]);
-        }
-      } catch (e) {
-        setComments(["すごい！", "応援してます！"]);
-      }
-    }
-    fetchComments();
+    // Firestoreからサブコレクションの弾幕コメントをリアルタイム取得
+    const commentsRef = collection(db, "danmakuComments", title, "comments");
+    const q = query(commentsRef, orderBy("createdAt", "asc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetched = snapshot.docs.map(doc => doc.data().text);
+      setComments(fetched.length > 0 ? fetched : ["すごい！", "応援してます！"]);
+    });
+    return () => unsubscribe();
   }, [title]);
 
   useEffect(() => {
@@ -61,18 +56,11 @@ function Danmaku({ title }) {
     setSending(true);
     const commentText = input.trim();
     try {
-      const docRef = doc(collection(db, "danmakuComments"), title);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        await updateDoc(docRef, {
-          comments: arrayUnion(commentText)
-        });
-      } else {
-        await setDoc(docRef, {
-          comments: [commentText]
-        });
-      }
-      setComments(prev => [...prev, commentText]);
+      const commentsRef = collection(db, "danmakuComments", title, "comments");
+      await addDoc(commentsRef, {
+        text: commentText,
+        createdAt: serverTimestamp()
+      });
       setInput("");
     } catch (e) {
       // エラー処理（必要に応じて）
