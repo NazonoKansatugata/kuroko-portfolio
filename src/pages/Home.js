@@ -76,11 +76,23 @@ function Home() {
         <section className="niconico-work-detail">
           <h2>{selected.title}</h2>
           <p>{selected.description}</p>
-          <p>
-            <a href={selected.url} target="_blank" rel="noopener noreferrer">
-              GitHub/詳細を見る
-            </a>
-          </p>
+          <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap', margin: '8px 0'}}>
+            {selected.github && selected.github !== '#' && selected.github !== '' && (
+              <a href={selected.github} target="_blank" rel="noopener noreferrer">
+                GitHub
+              </a>
+            )}
+            {selected.youtube && selected.youtube !== '#' && selected.youtube !== '' && (
+              <a href={selected.youtube} target="_blank" rel="noopener noreferrer">
+                YouTube
+              </a>
+            )}
+            {selected.site && selected.site !== '#' && selected.site !== '' && (
+              <a href={selected.site} target="_blank" rel="noopener noreferrer">
+                紹介サイト
+              </a>
+            )}
+          </div>
         </section>
         <section className="niconico-works">
           <h2>動画リスト</h2>
